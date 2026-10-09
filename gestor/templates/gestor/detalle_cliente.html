@@ -13,7 +13,17 @@
     <nav class="bg-indigo-600 dark:bg-indigo-800 text-white p-4 shadow-lg mb-8">
         <div class="container mx-auto flex justify-between items-center px-4">
             <a href="{% url 'inicio' %}" class="font-bold hover:text-indigo-200">← Volver al Inicio</a>
-            <h1 class="text-xl font-bold">{{ cliente.nombre }}</h1>
+            
+            <!-- Contenedor con el título y el botón de Salir -->
+            <div class="flex items-center gap-6">
+                <h1 class="text-xl font-bold">{{ cliente.nombre }}</h1>
+                <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
+                    {% csrf_token %}
+                    <button type="submit" class="text-sm font-bold text-indigo-200 hover:text-white transition-colors">
+                        Salir
+                    </button>
+                </form>
+            </div>
         </div>
     </nav>
 
@@ -23,25 +33,15 @@
             <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow border border-slate-100 dark:border-slate-700">
                 <h3 class="text-xl font-bold mb-4">Nuevo Posteo</h3>
                 
-                <form method="POST" action="">
+                <!-- IMPORTANTE: enctype para permitir subida de imágenes -->
+                <form method="POST" action="" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Red Social</label>
-                            {{ form.red_social }}
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Fecha y Hora</label>
-                            {{ form.fecha_publicacion }}
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Estado</label>
-                            {{ form.estado }}
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Texto / Copy</label>
-                            {{ form.texto_posteo }}
-                        </div>
+                        <div><label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Red Social</label>{{ form.red_social }}</div>
+                        <div><label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Fecha y Hora</label>{{ form.fecha_publicacion }}</div>
+                        <div><label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Estado</label>{{ form.estado }}</div>
+                        <div><label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Imagen (Opcional)</label>{{ form.imagen }}</div>
+                        <div><label class="block text-sm font-bold text-slate-600 dark:text-slate-300">Texto / Copy</label>{{ form.texto_posteo }}</div>
                     </div>
                     <button type="submit" class="mt-6 w-full bg-indigo-600 text-white font-bold py-3 rounded-xl hover:bg-indigo-700 transition-colors shadow-lg">
                         Guardar Publicación
@@ -56,8 +56,6 @@
             <div class="space-y-4">
                 {% for post in publicaciones %}
                     <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl shadow-sm border-l-4 border-indigo-500 border-y border-r border-slate-100 dark:border-slate-700">
-                        
-                        <!-- Bloque de botones actualizado -->
                         <div class="flex justify-between items-start mb-3">
                             <div>
                                 <span class="font-bold text-indigo-600 dark:text-indigo-400 text-lg">{{ post.red_social }}</span>
@@ -70,7 +68,6 @@
                                     {% else %}bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300{% endif %}">
                                     {{ post.estado }}
                                 </span>
-                                
                                 <a href="{% url 'editar_publicacion' post.id %}" class="text-slate-400 hover:text-indigo-500 transition-colors" title="Editar">✏️</a>
                                 <form method="POST" action="{% url 'eliminar_publicacion' post.id %}" class="inline m-0 p-0" onsubmit="return confirm('¿Seguro que querés borrar esta publicación?');">
                                     {% csrf_token %}
@@ -79,6 +76,13 @@
                             </div>
                         </div>
                         
+                        <!-- Si el post tiene imagen, la mostramos -->
+                        {% if post.imagen %}
+                            <div class="mb-4">
+                                <img src="{{ post.imagen.url }}" alt="Imagen del posteo" class="rounded-xl max-h-64 object-cover border border-slate-200 dark:border-slate-600">
+                            </div>
+                        {% endif %}
+
                         <p class="text-slate-700 dark:text-slate-300 text-sm whitespace-pre-wrap">{{ post.texto_posteo }}</p>
                     </div>
                 {% empty %}
@@ -88,7 +92,6 @@
                 {% endfor %}
             </div>
         </div>
-
     </div>
 
     <script>

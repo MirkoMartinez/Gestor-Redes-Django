@@ -32,9 +32,20 @@
                     Gestor de Redes
                 </span>
             </div>
-            <button id="btn-tema" class="p-2 rounded-full hover:bg-indigo-500 dark:hover:bg-indigo-700 transition-colors focus:outline-none">
-                <span id="icono-tema" class="text-xl">🌙</span>
-            </button>
+            
+            <!-- Botón de Cerrar Sesión y Modo Oscuro -->
+            <div class="flex items-center gap-4">
+                <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
+                    {% csrf_token %}
+                    <button type="submit" class="text-sm font-bold text-indigo-100 hover:text-white transition-colors">
+                        Cerrar Sesión
+                    </button>
+                </form>
+
+                <button id="btn-tema" class="p-2 rounded-full hover:bg-indigo-500 dark:hover:bg-indigo-700 transition-colors focus:outline-none">
+                    <span id="icono-tema" class="text-xl">🌙</span>
+                </button>
+            </div>
         </div>
     </nav>
 
